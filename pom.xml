@@ -80,6 +80,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>gourmetcompass_api</finalName>
 	</build>
 
 </project>
