@@ -43,12 +43,12 @@ public class RecipeService implements IRecipeService{
         }
 	}
 
-    public Recipe updateRecipe(User loggedUser, Integer recipeId, RecipeDTO recipeDTO) throws Exception {
+    public Recipe updateRecipe(User user, Integer recipeId, RecipeDTO recipeDTO) throws Exception {
         if (recipeId < 1) {
             throw new Exception("Recipe id is required.");
         }
 
-        Optional<Recipe> recipe = recipeRepository.findById(recipeId);
+        Optional<Recipe> recipe = recipeRepository.findByIdAndUserId(recipeId, user.getId());
         if(!recipe.isPresent()) {
             throw new Exception("Recipe not found.");
         }
@@ -92,7 +92,7 @@ public class RecipeService implements IRecipeService{
             throw new Exception("Recipe id is required.");
         }
 
-        Optional<Recipe> recipe = recipeRepository.findById(recipeId);
+        Optional<Recipe> recipe = recipeRepository.findByIdAndUserId(recipeId, user.getId());
         if(!recipe.isPresent()) {
             throw new Exception("Recipe not found.");
         }
@@ -106,13 +106,13 @@ public class RecipeService implements IRecipeService{
             throw new Exception("Recipe id is required.");
         }
 
-        Boolean recipe = recipeRepository.existsById(recipeId);
+        Boolean recipe = recipeRepository.existsByIdAndUserId(recipeId, user.getId());
         if(!recipe) {
             throw new Exception("Recipe not found.");
         }
 
         try {
-            recipeRepository.deleteById(recipeId);
+            recipeRepository.deleteByIdAndUserId(recipeId, user.getId());
             return true;
         } catch(Exception exception) {
             exception.printStackTrace();

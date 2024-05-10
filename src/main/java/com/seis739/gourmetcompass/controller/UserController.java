@@ -12,12 +12,15 @@ import com.seis739.gourmetcompass.aspects.TokenValidator;
 import com.seis739.gourmetcompass.dto.CreateUserDTO;
 import com.seis739.gourmetcompass.dto.UserDTO;
 import com.seis739.gourmetcompass.model.User;
+import com.seis739.gourmetcompass.service.ClerkService;
 import com.seis739.gourmetcompass.service.UserService;
 import com.seis739.gourmetcompass.utils.ApiResponse;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
@@ -28,21 +31,22 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    ClerkService clerkService;
+
     @RateLimited
     @TokenValidator
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @GetMapping("/{userId}")
-    public ApiResponse getUser(@RequestHeader Map<String, String> headers, 
-        @PathVariable("userId") Integer userId
-    ) {
+    @GetMapping()
+    public ApiResponse getUser(@RequestHeader Map<String, String> headers) {
 
-        Optional<UserDTO> userDTO = userService.getUser(userId);
-
-        if(userDTO == null) {
-            return new ApiResponse("User not found");
+        try {
+            User user = clerkService.getLoggedUser(headers);
+            Optional<UserDTO> userDTO = userService.getUser(user.getId());
+            return new ApiResponse(userDTO.get());
+        } catch (Exception exception) {
+            return new ApiResponse(exception.getMessage());
         }
-
-        return new ApiResponse(userDTO.get());
     }
     
     @RateLimited
@@ -54,6 +58,39 @@ public class UserController {
             User newUser = userService.createUser(createUserDTO);
 
             return new ApiResponse(newUser.getPublicUser());
+        } catch (Exception e) {
+            return new ApiResponse(e.getMessage());
+        }
+    }
+
+    @RateLimited
+    @TokenValidator
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @PutMapping()
+    public ApiResponse updateUser(@RequestHeader Map<String, String> headers, 
+        @RequestBody UserDTO userDTO) 
+    {
+        try{
+            User user = clerkService.getLoggedUser(headers);
+            User newUser = userService.updateUser(user.getId(), userDTO);
+
+            return new ApiResponse(newUser.getPublicUser());
+        } catch (Exception e) {
+            return new ApiResponse(e.getMessage());
+        }
+    }
+
+    @RateLimited
+    @TokenValidator
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @DeleteMapping()
+    public ApiResponse deleteUser(@RequestHeader Map<String, String> headers) 
+    {
+        try{
+            User user = clerkService.getLoggedUser(headers);
+            userService.deleteUser(user.getId());
+
+            return new ApiResponse(true);
         } catch (Exception e) {
             return new ApiResponse(e.getMessage());
         }

@@ -13,7 +13,7 @@ import com.seis739.gourmetcompass.enums.TokenStatus;
 import com.seis739.gourmetcompass.model.User;
 import com.seis739.gourmetcompass.model.UserSession;
 import com.seis739.gourmetcompass.repository.UserRepository;
-import com.seis739.gourmetcompass.repository.UserSessionReposritory;
+import com.seis739.gourmetcompass.repository.UserSessionRepository;
 import com.seis739.gourmetcompass.utils.Constants;
 import com.seis739.gourmetcompass.utils.Helper;
 
@@ -24,9 +24,8 @@ public class ClerkService implements IClerkService{
     UserRepository userRepository;
 
     @Autowired
-    UserSessionReposritory userSessionReposritory;
+    UserSessionRepository userSessionRepository;
 
-    @Override
     public Optional<UserSession> login(String email, String password) throws NoSuchAlgorithmException {
         UserSession userSession = null;
         String hashPassword = Helper.getMD5Hash(password);
@@ -41,24 +40,23 @@ public class ClerkService implements IClerkService{
         userSession.setToken(Helper.getMD5Hash(user.get().getEmail() + "_" + Timestamp.valueOf(LocalDateTime.now()).getTime()));
         userSession.setExpires(LocalDateTime.now().plus(Constants.SESSION_TIME_VALUE, Constants.SESSION_TIME_UNIT));
 
-        userSessionReposritory.save(userSession);
+        userSessionRepository.save(userSession);
         return Optional.ofNullable(userSession);
     }
 
-    @Override
     public Boolean logout(String token) {
-        Optional<UserSession> userSession = userSessionReposritory.findByToken(token);
+        Optional<UserSession> userSession = userSessionRepository.findByToken(token);
 
         if(!userSession.isPresent()) {
             return false;
         }
 
-        userSessionReposritory.deleteById(userSession.get().getId());
+        userSessionRepository.deleteById(userSession.get().getId());
         return true;
     }
 
 	public TokenStatus getTokenStatus(String token) {
-		Optional<UserSession> userSession = userSessionReposritory.findByToken(token);
+		Optional<UserSession> userSession = userSessionRepository.findByToken(token);
         
         if(!userSession.isPresent()) {
             return TokenStatus.INVALID;
@@ -72,10 +70,9 @@ public class ClerkService implements IClerkService{
         return TokenStatus.VALID;
 	}
 
-	@Override
 	public User getLoggedUser(Map<String, String> headers) throws Exception {
         String token = Helper.getTokenFromHeaders(headers);
-        Optional<UserSession> userSession = userSessionReposritory.findByToken(token);
+        Optional<UserSession> userSession = userSessionRepository.findByToken(token);
 
         if(!userSession.isPresent()){
             return null;

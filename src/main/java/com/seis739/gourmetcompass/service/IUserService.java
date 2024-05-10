@@ -9,6 +9,7 @@ import com.seis739.gourmetcompass.model.User;
 public interface IUserService {
     public Optional<UserDTO> getUser(Integer id);
     public User createUser(CreateUserDTO createUserDTO) throws Exception;
-    public Boolean deleteUser(Integer id);
+    public User updateUser(Integer userId, UserDTO createUserDTO) throws Exception;
+    public void deleteUser(Integer id)  throws Exception;
     public Optional<UserDTO> getUserByEmail(String email);
 }
