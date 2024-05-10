@@ -66,7 +66,8 @@ public class UserService implements IUserService {
 
             userSessionRepository.deleteByUserId(user.get().getId());
 
-            userRepository.delete(user.get());
+            user.get().setDeletedAt(LocalDateTime.now());
+            userRepository.save(user.get());
         } catch (Exception exception) {
             exception.printStackTrace();
             throw new Exception("Error deleting user.");
