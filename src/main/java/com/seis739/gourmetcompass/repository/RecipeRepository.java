@@ -22,6 +22,11 @@ public interface RecipeRepository extends CrudRepository<Recipe, Integer> {
         + "order by created_at desc", nativeQuery = true)
     ArrayList<Recipe> filterPublicByQuery(String query);
 
+    @Query(value = "select * from recipes r " 
+        + "where r.user_id = ?1 and (name like ?2 or description like ?2 or ingredients like ?2 or steps like ?2) " 
+        + "order by created_at desc", nativeQuery = true)
+    ArrayList<Recipe> filterByUserIdAndQuery(Integer userId, String query);
+
     Optional<Recipe> findByIdAndUserId(Integer id, Integer userId);
     Boolean existsByIdAndUserId(Integer id, Integer userId);
 

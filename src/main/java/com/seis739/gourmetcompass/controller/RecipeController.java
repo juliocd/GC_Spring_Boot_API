@@ -105,10 +105,32 @@ public class RecipeController {
     @RateLimited
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @GetMapping("/public")
-    public ApiResponse getPublicRecipes(@RequestParam Optional<String> query) 
+    public ApiResponse listRecipes(@RequestParam Optional<String> query) 
     {
         try{
-            ArrayList<Recipe> publicRecipes = recipeService.getPublicRecipes(query);
+            ArrayList<Recipe> publicRecipes = recipeService.listPublicRecipes(query);
+
+            ArrayList<RecipeDTO> publicRecipesDTO = new ArrayList<RecipeDTO>();
+            for (Recipe publicRecipe : publicRecipes) {
+                publicRecipesDTO.add(publicRecipe.getPublicRecipe());
+            }
+
+            return new ApiResponse(publicRecipesDTO);
+        } catch (Exception e) {
+            return new ApiResponse(e.getMessage());
+        }
+    }
+
+    @RateLimited
+    @TokenValidator
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @GetMapping("/list")
+    public ApiResponse listPublicRecipes(@RequestHeader Map<String, String> headers, 
+        @RequestParam Optional<String> query) 
+    {
+        try{
+            User user = clerkService.getLoggedUser(headers);
+            ArrayList<Recipe> publicRecipes = recipeService.listRecipes(user, query);
 
             ArrayList<RecipeDTO> publicRecipesDTO = new ArrayList<RecipeDTO>();
             for (Recipe publicRecipe : publicRecipes) {

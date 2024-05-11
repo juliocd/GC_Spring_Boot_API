@@ -121,7 +121,7 @@ public class RecipeService implements IRecipeService{
     }
 
     @Override
-    public ArrayList<Recipe> getPublicRecipes(Optional<String> query) throws Exception {
+    public ArrayList<Recipe> listPublicRecipes(Optional<String> query) throws Exception {
         try {
             if(query.isPresent()) {
                 return recipeRepository.filterPublicByQuery(Helper.formatForSearching(query.get()));
@@ -131,6 +131,20 @@ public class RecipeService implements IRecipeService{
         } catch(Exception exception) {
             exception.printStackTrace();
             throw new Exception("Error getting public recipes.");
+        }
+    }
+
+    @Override
+    public ArrayList<Recipe> listRecipes(User user, Optional<String> query) throws Exception {
+        try {
+            if(query.isPresent()) {
+                return recipeRepository.filterByUserIdAndQuery(user.getId(), Helper.formatForSearching(query.get()));
+            }
+
+            return recipeRepository.findAllPublic();
+        } catch(Exception exception) {
+            exception.printStackTrace();
+            throw new Exception("Error getting recipes.");
         }
     }
 }
