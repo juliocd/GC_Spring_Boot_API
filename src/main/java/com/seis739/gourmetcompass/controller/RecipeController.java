@@ -104,7 +104,7 @@ public class RecipeController {
 
     @RateLimited
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @GetMapping("/public")
+    @GetMapping("/list-public")
     public ApiResponse listRecipes(@RequestParam Optional<String> query) 
     {
         try{
