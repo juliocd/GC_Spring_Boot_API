@@ -25,6 +25,8 @@ import com.seis739.gourmetcompass.service.ClerkService;
 import com.seis739.gourmetcompass.service.RecipeService;
 import com.seis739.gourmetcompass.utils.ApiResponse;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping(path = "/app/recipe")
 public class RecipeController {
@@ -57,7 +59,7 @@ public class RecipeController {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @PostMapping()
     public ApiResponse createRecipe(@RequestHeader Map<String, String> headers, 
-        @RequestBody RecipeDTO recipeDTO) 
+        @Valid @RequestBody RecipeDTO recipeDTO) 
     {
         try{
             User user = clerkService.getLoggedUser(headers);
@@ -73,8 +75,8 @@ public class RecipeController {
     @TokenValidator
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @PutMapping("/{recipeId}")
-    public ApiResponse updateRecipe(@RequestHeader Map<String, String> headers, 
-        @RequestBody RecipeDTO recipeDTO, @PathVariable("recipeId") Integer recipeId) 
+    public ApiResponse updateRecipe(@Valid @RequestHeader Map<String, String> headers, 
+        @Valid @RequestBody RecipeDTO recipeDTO, @PathVariable("recipeId") Integer recipeId) 
     {
         try{
             User user = clerkService.getLoggedUser(headers);
@@ -105,7 +107,7 @@ public class RecipeController {
     @RateLimited
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @GetMapping("/list-public")
-    public ApiResponse listRecipes(@RequestParam Optional<String> query) 
+    public ApiResponse listPublicRecipes(@RequestParam Optional<String> query) 
     {
         try{
             ArrayList<Recipe> publicRecipes = recipeService.listPublicRecipes(query);
@@ -125,19 +127,19 @@ public class RecipeController {
     @TokenValidator
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @GetMapping("/list")
-    public ApiResponse listPublicRecipes(@RequestHeader Map<String, String> headers, 
+    public ApiResponse listRecipes(@RequestHeader Map<String, String> headers, 
         @RequestParam Optional<String> query) 
     {
         try{
             User user = clerkService.getLoggedUser(headers);
-            ArrayList<Recipe> publicRecipes = recipeService.listRecipes(user, query);
+            ArrayList<Recipe> recipes = recipeService.listRecipes(user, query);
 
-            ArrayList<RecipeDTO> publicRecipesDTO = new ArrayList<RecipeDTO>();
-            for (Recipe publicRecipe : publicRecipes) {
-                publicRecipesDTO.add(publicRecipe.getPublicRecipe());
+            ArrayList<RecipeDTO> recipesDTO = new ArrayList<RecipeDTO>();
+            for (Recipe recipe : recipes) {
+                recipesDTO.add(recipe.getPublicRecipe());
             }
 
-            return new ApiResponse(publicRecipesDTO);
+            return new ApiResponse(recipesDTO);
         } catch (Exception e) {
             return new ApiResponse(e.getMessage());
         }

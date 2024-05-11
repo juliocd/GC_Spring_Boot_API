@@ -13,6 +13,8 @@ import com.seis739.gourmetcompass.repository.UserRepository;
 import com.seis739.gourmetcompass.repository.UserSessionRepository;
 import com.seis739.gourmetcompass.utils.Helper;
 
+import jakarta.validation.ConstraintViolationException;
+
 @Service
 public class UserService implements IUserService {
 
@@ -47,12 +49,14 @@ public class UserService implements IUserService {
             user.setEmail(createUserDTO.getEmail());
             user.setPassword(Helper.getMD5Hash(createUserDTO.getPassword()));
             user.setCreatedAt(LocalDateTime.now());
+
+            return userRepository.save(user);
+        } catch(ConstraintViolationException exception) {
+            throw new Exception(Helper.getConstrainsErrors(exception));
         } catch (Exception exception) {
             exception.printStackTrace();
-            throw new Exception("Error creating an user.");
+            throw new Exception(exception.getMessage());
         }
-        
-        return userRepository.save(user);
     }
 
     @Override
@@ -100,6 +104,8 @@ public class UserService implements IUserService {
             if(userDTO.getLastName() != null) {
                 user.get().setLastName(userDTO.getLastName());
             }
+        }  catch(ConstraintViolationException exception) {
+            throw new Exception(Helper.getConstrainsErrors(exception));
         } catch (Exception exception) {
             exception.printStackTrace();
             return null;

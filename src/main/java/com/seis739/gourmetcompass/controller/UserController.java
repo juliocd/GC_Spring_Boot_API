@@ -16,6 +16,8 @@ import com.seis739.gourmetcompass.service.ClerkService;
 import com.seis739.gourmetcompass.service.UserService;
 import com.seis739.gourmetcompass.utils.ApiResponse;
 
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,7 +53,7 @@ public class UserController {
     @RateLimited
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @PostMapping()
-    public ApiResponse createUser(@RequestBody CreateUserDTO createUserDTO) 
+    public ApiResponse createUser(@Valid @RequestBody CreateUserDTO createUserDTO) 
     {
         try{
             User newUser = userService.createUser(createUserDTO);
@@ -67,7 +69,7 @@ public class UserController {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @PutMapping()
     public ApiResponse updateUser(@RequestHeader Map<String, String> headers, 
-        @RequestBody UserDTO userDTO) 
+        @Valid @RequestBody UserDTO userDTO) 
     {
         try{
             User user = clerkService.getLoggedUser(headers);

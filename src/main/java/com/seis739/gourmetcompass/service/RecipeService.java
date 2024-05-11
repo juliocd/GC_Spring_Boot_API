@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.seis739.gourmetcompass.dto.RecipeDTO;
@@ -12,6 +13,8 @@ import com.seis739.gourmetcompass.model.Recipe;
 import com.seis739.gourmetcompass.model.User;
 import com.seis739.gourmetcompass.repository.RecipeRepository;
 import com.seis739.gourmetcompass.utils.Helper;
+
+import jakarta.validation.ConstraintViolationException;
 
 @Service
 public class RecipeService implements IRecipeService{
@@ -33,10 +36,15 @@ public class RecipeService implements IRecipeService{
             recipe.setCreatedAt(LocalDateTime.now());
 
             recipe.setCountry(recipeDTO.getCountry() != null ? recipeDTO.getCountry() : "");
-            recipe.setIsPrivate(recipeDTO.getIsPrivate() == false ? 0 : 1);
-            recipe.setCreatedAt(LocalDateTime.now());
 
+            recipe.setIsPrivate(recipeDTO.getIsPrivate() == null || recipeDTO.getIsPrivate() == false ? 0 : 1);
+            recipe.setCreatedAt(LocalDateTime.now());
+            
             return recipeRepository.save(recipe);
+        }  catch(DataIntegrityViolationException exception) {
+            throw new Exception(Helper.getDataIntegrityErrors(exception));
+        }  catch(ConstraintViolationException exception) {
+            throw new Exception(Helper.getConstrainsErrors(exception));
         } catch (Exception exception) {
             exception.printStackTrace();
             throw new Exception(exception.getMessage());
@@ -81,6 +89,10 @@ public class RecipeService implements IRecipeService{
             recipe.get().setUpdatedAt(LocalDateTime.now());
 
             return recipeRepository.save(recipe.get());
+        }  catch(DataIntegrityViolationException exception) {
+            throw new Exception(Helper.getDataIntegrityErrors(exception));
+        }  catch(ConstraintViolationException exception) {
+            throw new Exception(Helper.getConstrainsErrors(exception));
         } catch (Exception exception) {
             exception.printStackTrace();
             throw new Exception(exception.getMessage());

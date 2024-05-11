@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.seis739.gourmetcompass.dto.UserDTO;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,18 +21,22 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @NotBlank(message = "cannot be empty")
     @JsonProperty(value="firstFame")
     @Column(name = "first_name")
     private String firstName;
 
+    @NotBlank(message = "cannot be empty")
     @JsonProperty(value="lastName")
     @Column(name = "last_name")
     private String lastName;
 
+    @NotBlank(message = "cannot be empty")
     @JsonProperty(value="email")
     @Column(name = "email")
     private String email;
 
+    @NotBlank(message = "cannot be empty")
     @JsonProperty(value="password")
     @Column(name = "password")
     private String password;

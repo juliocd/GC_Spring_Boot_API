@@ -16,6 +16,8 @@ import com.seis739.gourmetcompass.model.UserSession;
 import com.seis739.gourmetcompass.service.ClerkService;
 import com.seis739.gourmetcompass.utils.ApiResponse;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping(path = "/app/clerk")
 public class ClerkController {
@@ -26,7 +28,7 @@ public class ClerkController {
     @RateLimited
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @PostMapping("/login")
-    public ApiResponse login(@RequestBody LoginDTO loginDTO) {
+    public ApiResponse login(@Valid @RequestBody LoginDTO loginDTO) {
         try{
             Optional<UserSession> newUserSession = clerkService.login(loginDTO.getEmail(), loginDTO.getPassword());
 

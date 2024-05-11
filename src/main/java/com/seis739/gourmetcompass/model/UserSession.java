@@ -46,7 +46,6 @@ public class UserSession {
         UserSessionDTO userSessionDTO = new UserSessionDTO();
         userSessionDTO.setExpires(this.expires);
         userSessionDTO.setToken(this.token);
-        userSessionDTO.setUserId(this.userId);
         
         return userSessionDTO;
     }

@@ -13,6 +13,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,26 +29,27 @@ public class Recipe {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Min(value = 1,message = "cannot be empty")
     @JsonProperty(value="userId")
     @Column(name = "user_id")
     private int userId;
 
+    @NotBlank(message = "cannot be empty")
     @JsonProperty(value="name")
     @Column(name = "name")
     private String name;
 
-    @JsonProperty(value="country")
-    @Column(name = "country")
-    private String country;
-
+    @NotBlank(message = "cannot be empty")
     @JsonProperty(value="description")
     @Column(name = "description")
     private String description;
 
+    @NotBlank(message = "cannot be empty")
     @JsonProperty(value="ingredients")
     @Column(name = "ingredients")
     private String ingredients;
 
+    @NotBlank(message = "cannot be empty")
     @JsonProperty(value="steps")
     @Column(name = "steps")
     private String steps;
@@ -54,6 +57,10 @@ public class Recipe {
     @JsonProperty(value="isPrivate")
     @Column(name = "is_private")
     private Integer isPrivate;
+
+    @JsonProperty(value="country")
+    @Column(name = "country")
+    private String country;
 
     @JsonProperty(value="createdAt")
     @Column(name = "created_at")
@@ -68,14 +75,14 @@ public class Recipe {
 	public RecipeDTO getPublicRecipe() {
 		RecipeDTO recipeDTO = new RecipeDTO();
 
-        recipeDTO.setId(this.id);
-        recipeDTO.setName(this.name);
-        recipeDTO.setCountry(this.country != null ? this.country : "");
-        recipeDTO.setIsPrivate(this.isPrivate == 1);
-        recipeDTO.setDescription(this.description);
-        recipeDTO.setIngredients(this.ingredients);
-        recipeDTO.setSteps(this.steps);
-        recipeDTO.setCreatedAt(this.createdAt);
+        recipeDTO.setId(this.getId());
+        recipeDTO.setName(this.getName());
+        recipeDTO.setCountry(this.getCountry() != null ? this.getCountry() : "");
+        recipeDTO.setIsPrivate(this.getIsPrivate() == 1);
+        recipeDTO.setDescription(this.getDescription());
+        recipeDTO.setIngredients(this.getIngredients());
+        recipeDTO.setSteps(this.getSteps());
+        recipeDTO.setCreatedAt(this.getCreatedAt());
 
         return recipeDTO;
 	}

@@ -5,6 +5,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
+import org.springframework.core.NestedExceptionUtils;
+import org.springframework.dao.DataIntegrityViolationException;
+
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+
 public abstract class Helper {
     
     public static String getMD5Hash(String str) throws NoSuchAlgorithmException {
@@ -26,5 +32,19 @@ public abstract class Helper {
 
     public static String formatForSearching(String query) {
         return "%" + query + "%";
+    }
+
+    public static String getConstrainsErrors(ConstraintViolationException exception) {
+        StringBuilder strBuilder = new StringBuilder();
+
+        for (ConstraintViolation<?> violation : exception.getConstraintViolations()) {
+            strBuilder.append(String.format("%s: %s, ", violation.getPropertyPath(), violation.getMessage()));
+        }
+
+        return strBuilder.substring(0, strBuilder.length()-1);
+    }
+
+    public static String getDataIntegrityErrors(DataIntegrityViolationException exception) {
+        return NestedExceptionUtils.getMostSpecificCause(exception).getMessage();
     }
 }
